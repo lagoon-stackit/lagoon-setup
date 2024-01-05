@@ -1,0 +1,311 @@
+# Any values defined here are not used anywhere other than lint/CI.
+
+# To be deprecated - see uselagoon/lagoon#2907
+harborURL: http://disabled-only-use-harbor-via-deploy-controller.invalid
+registry: disabled-only-use-harbor-via-deploy-controller.invalid
+harborAdminPassword: 'h3BpN5A?ab8NTcFd'
+# used in api
+elasticsearchURL: https://elastic.kk8s.runs.onstackit.cloud
+kibanaURL: https://kibana.kk8s.runs.onstackit.cloud
+logsDBAdminPassword: admin
+s3FilesAccessKeyID: 1ZI6KQXB5VS8FRBR5BMQ
+s3FilesBucket: lagoon-files
+s3FilesHost: https://lagoon-files.object.storage.eu01.onstackit.cloud
+s3FilesSecretAccessKey: UyJawaGesXxOLk+j0WLH89AaYPWbIrbes8mS+63e
+s3BAASAccessKeyID: baas
+s3BAASSecretAccessKey: baas123
+lagoonUIURL: https://ui.kk8s.runs.onstackit.cloud
+lagoonWebhookURL: https://webhook.kk8s.runs.onstackit.cloud
+defaultIngressClassName: nginx
+
+# used in ui
+lagoonAPIURL: https://api.kk8s.runs.onstackit.cloud/graphql
+keycloakFrontEndURL: https://keycloak.kk8s.runs.onstackit.cloud
+
+keycloakAdminEmail: christian.wiedemann@key-tec.de
+
+api:
+  replicaCount: 1
+  ingress:
+    annotations:
+      kubernetes.io/tls-acme: "true"
+    enabled: true
+    hosts:
+      - host: api.kk8s.runs.onstackit.cloud
+        paths:
+          - /
+    tls:
+      - secretName: lagoon-api-secret
+        hosts:
+          - api.kk8s.runs.onstackit.cloud
+  image:
+    repository: uselagoon/api
+  resources:
+    requests:
+      cpu: "10m"
+
+
+apiDB:
+  replicaCount: 1
+  image:
+    repository: uselagoon/api-db
+  storageSize: 16Gi
+  resources:
+    requests:
+      cpu: "10m"
+
+apiRedis:
+  image:
+    repository: uselagoon/api-redis
+  resources:
+    requests:
+      cpu: "10m"
+
+# TODO - update repo/tag before v2.11 release
+actionsHandler:
+  replicaCount: 1
+  image:
+    repository: uselagoon/actions-handler
+
+keycloak:
+  keycloakFrontEndURL: https://keycloak.kk8s.runs.onstackit.cloud
+  realmSettings:
+    enabled: true
+    options:
+      resetPasswordAllowed: true
+      rememberMe: true
+  email:
+    enabled: true
+    settings:
+      host: mailhog
+      port: '1025'
+      fromDisplayName: Lagoon
+      from: lagoon@keytec.de
+      replyToDisplayName: Lagoon No-Reply
+      replyTo: lagoon@keytec.de
+      envelopeFrom: lagoon@keytec.de
+  image:
+    repository: uselagoon/keycloak
+  resources:
+    requests:
+      cpu: "10m"
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: keycloak.kk8s.runs.onstackit.cloud
+        paths:
+          - /
+    tls:
+      - secretName: lagoon-keycloak-secret
+        hosts:
+          - keycloak.kk8s.runs.onstackit.cloud
+
+keycloakDB:
+  replicaCount: 1
+  image:
+    repository: uselagoon/keycloak-db
+  resources:
+    requests:
+      cpu: "10m"
+
+broker:
+  replicaCount: 1
+  serviceMonitor:
+    enabled: false
+  image:
+    repository: uselagoon/broker
+  resources:
+    requests:
+      cpu: "10m"
+
+authServer:
+  replicaCount: 1
+  image:
+    repository: uselagoon/auth-server
+  resources:
+    requests:
+      cpu: "10m"
+
+webhooks2tasks:
+  replicaCount: 1
+  image:
+    repository: uselagoon/webhooks2tasks
+  resources:
+    requests:
+      cpu: "10m"
+
+webhookHandler:
+  replicaCount: 1
+  image:
+    repository: uselagoon/webhook-handler
+  resources:
+    requests:
+      cpu: "10m"
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: webhook.kk8s.runs.onstackit.cloud
+        paths:
+          - /
+    tls:
+     - secretName: lagoon-webhook-secret
+       hosts:
+         - webhook.kk8s.runs.onstackit.cloud
+ui:
+  replicaCount: 1
+  image:
+    repository: uselagoon/ui
+  resources:
+    requests:
+      cpu: "10m"
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: ui.kk8s.runs.onstackit.cloud
+        paths:
+          - /
+    tls:
+      - secretName: lagoon-ui-secret
+        hosts:
+          - ui.kk8s.runs.onstackit.cloud
+
+backupHandler:
+  replicaCount: 1
+  image:
+    repository: uselagoon/backup-handler
+  resources:
+    requests:
+      cpu: "10m"
+
+insightsHandler:
+  image:
+    repository: uselagoon/insights-handler
+    tag: main
+
+logs2notifications:
+  replicaCount: 1
+  image:
+    repository: uselagoon/logs2notifications
+
+drushAlias:
+  replicaCount: 1
+  image:
+    repository: uselagoon/drush-alias
+
+ssh:
+  replicaCount: 1
+  image:
+    repository: uselagoon/ssh
+  resources:
+    requests:
+      cpu: "10m"
+  service:
+    type: LoadBalancer
+    port: 22
+
+sshPortalAPI:
+  enabled: true
+  replicaCount: 1
+  debug: true
+  serviceMonitor:
+    enabled: false
+
+sshToken:
+  enabled: true
+  replicaCount: 1
+  debug: true
+  serviceMonitor:
+    enabled: false
+  service:
+    type: NodePort
+    ports:
+      sshserver: 2223
+  hostKeys:
+    ed25519: |
+      -----BEGIN OPENSSH PRIVATE KEY-----
+      b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+      QyNTUxOQAAACA/YqlzbdTqR53BHcDhvP0EVepZ66ZIT2HaXSpxdzwhMgAAAIgc+EPKHPhD
+      ygAAAAtzc2gtZWQyNTUxOQAAACA/YqlzbdTqR53BHcDhvP0EVepZ66ZIT2HaXSpxdzwhMg
+      AAAECW61aE011GKLSFBJ82G6oGEOjJSUV3STx16veSvX38kD9iqXNt1OpHncEdwOG8/QRV
+      6lnrpkhPYdpdKnF3PCEyAAAAAAECAwQF
+      -----END OPENSSH PRIVATE KEY-----
+
+controllerhandler:
+  replicaCount: 1
+  image:
+    repository: uselagoon/controllerhandler
+
+imageTag: ""
+
+workflows:
+  replicaCount: 1
+  image:
+    repository: uselagoon/workflows
+
+# enable nats cluster (and optionally natsbox debugger)
+nats:
+  enabled: true
+  cluster:
+    name: lagoon-core-ci-example
+  # natsbox:
+  #   enabled: true
+  #   # additional labels are required due to the network policy
+  #   additionalLabels:
+  #     lagoon-core-nats-client: "true"
+
+natsService:
+  type: ClusterIP
+
+natsConfig:
+  users:
+    lagoonRemote:
+      - user: ci-ssh-portal
+        password: ci-password
+  tls:
+    secretData:
+      ca.crt: |
+        -----BEGIN CERTIFICATE-----
+        MIIBgDCCASagAwIBAgIUe/jnFQ0sqoJKQP9CmguStIhyCNcwCgYIKoZIzj0EAwIw
+        HjEcMBoGA1UEAxMTbmF0cy1jYS5leGFtcGxlLmNvbTAeFw0yMjAzMDMxNDU2MDBa
+        Fw0zMjAyMjkxNDU2MDBaMB4xHDAaBgNVBAMTE25hdHMtY2EuZXhhbXBsZS5jb20w
+        WTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAT6ZjUtTIpBJSgGRyQIPdcFKBkt3h76
+        eyIdFVkR4L5NxVLwxyrj3ejbkA/KtbHfT+5+i1lpFyneUnCv8uJMGXXDo0IwQDAO
+        BgNVHQ8BAf8EBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUJnGYc+vw
+        zYXQvaFUImSZnEytUkkwCgYIKoZIzj0EAwIDSAAwRQIgET+GwxQ2TokxnPkNhgjb
+        zJ6PDtVHMNclAWSDebP9nnwCIQDrblreePb+pUBHvxFZNVFYBV4wF2gEkJC51tjw
+        a8aklQ==
+        -----END CERTIFICATE-----
+      server.crt: |
+        -----BEGIN CERTIFICATE-----
+        MIIB6TCCAY+gAwIBAgIUU0rJ7NyqtVt26P4ymCHc2wI1xTgwCgYIKoZIzj0EAwIw
+        HjEcMBoGA1UEAxMTbmF0cy1jYS5leGFtcGxlLmNvbTAeFw0yMjAzMDMxNDU2MDBa
+        Fw0zMjAyMjkxNDU2MDBaMCgxJjAkBgNVBAMTHWxhZ29vbi1jb3JlLW5hdHMtY29u
+        Y2VudHJhdG9yMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEzOKHU61tPi3IS4Tb
+        TekSPQ5j0eS3ALLR8AhHY+lV6K3FNHnrCeCkBP12Kg3c29fjk3OnvdOixqgjXTO9
+        1GvhgqOBoDCBnTAOBgNVHQ8BAf8EBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwEw
+        DAYDVR0TAQH/BAIwADAdBgNVHQ4EFgQUs3UCwAl/W6+UyUMhlyL/P2igQCQwHwYD
+        VR0jBBgwFoAUJnGYc+vwzYXQvaFUImSZnEytUkkwKAYDVR0RBCEwH4IdbGFnb29u
+        LWNvcmUtbmF0cy1jb25jZW50cmF0b3IwCgYIKoZIzj0EAwIDSAAwRQIhAOEZUQfm
+        tuziNxJqFdnsQqzEHHDcFBJsMqzC2T4AChinAiBr/BMy3ZFUE57629+mvnevQKF2
+        Xj0jfUL6vS82EAusNQ==
+        -----END CERTIFICATE-----
+      server.key: |
+        -----BEGIN EC PRIVATE KEY-----
+        MHcCAQEEIEEOrqm8DWTCnc6rq2OHmWcfSu/ewpv009gD9ekvWKMDoAoGCCqGSM49
+        AwEHoUQDQgAEzOKHU61tPi3IS4TbTekSPQ5j0eS3ALLR8AhHY+lV6K3FNHnrCeCk
+        BP12Kg3c29fjk3OnvdOixqgjXTO91Gvhgg==
+        -----END EC PRIVATE KEY-----
+
+protocolHttp: true
+## Additional container arguments
+##
+extraArgs:
+  - --enable-skip-login
+  - --enable-insecure-login
+  - --system-banner="Welcome to Kubernetes"
