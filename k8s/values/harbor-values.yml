@@ -1,0 +1,22 @@
+expose:
+  type: ingress
+  ingress:
+    annotations:
+      kubernetes.io/tls-acme: "true"
+    hosts:
+      core: harbor.kk8s.runs.onstackit.cloud
+  tls:
+    enabled: true
+    certSource: auto
+externalURL: https://harbor.kk8s.runs.onstackit.cloud
+harborAdminPassword: h3BpN5A?ab8NTcFd
+chartmuseum:
+  enabled: false
+clair:
+  enabled: false
+notary:
+  enabled: false
+trivy:
+  enabled: false
+jobservice:
+  jobLogger: stdout
